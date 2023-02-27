@@ -1,5 +1,5 @@
 import * as express from 'express';
-import TeamsRoute from './database/routes/TeamsRoute';
+import TeamsRoute from './routes/TeamsRoute';
 
 class App {
   public app: express.Express;
