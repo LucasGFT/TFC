@@ -7,6 +7,11 @@ class TeamsService {
     const teams = await this.teams.findAll();
     return teams;
   }
+
+  public async findById(id: number) {
+    const team = await this.teams.findByPk(id);
+    return team;
+  }
 }
 
 export default TeamsService;

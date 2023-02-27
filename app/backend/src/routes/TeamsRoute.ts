@@ -15,6 +15,9 @@ class TeamsRoute {
     this.route.get('/', (req, res) => {
       this.controller.findAll(req, res);
     });
+    this.route.get('/:id', (req, res) => {
+      this.controller.findById(req, res);
+    });
   }
 }
 

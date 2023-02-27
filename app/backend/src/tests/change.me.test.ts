@@ -1,45 +1,48 @@
-import * as sinon from 'sinon';
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 // @ts-ignore
 import chaiHttp = require('chai-http');
 
 import { app } from '../app';
-import Example from '../database/models/ExampleModel';
+import TeamModel from '../models/TeamsModel';
 
 import { Response } from 'superagent';
+import teamsMock from './testsModel/teamsMock';
 
 chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe('Seu teste', () => {
-  /**
-   * Exemplo do uso de stubs com tipos
-   */
+describe('.get no /team', () => {
+  let chaiHttpResponse: Response;
+  
+  before(async () => {
+    sinon.stub(TeamModel, 'findAll').resolves(teamsMock as TeamModel[]);
+  });
 
+  after(() => {
+    (TeamModel.findAll as sinon.SinonStub).restore();
+  });
+
+  it('todos teams', async () => {
+    chaiHttpResponse = await chai.request(app).get('/teams');
+    expect(chaiHttpResponse.status).to.be.eq(200);
+  });
+});
+
+// describe('.get team pelo id', () => {
   // let chaiHttpResponse: Response;
 
   // before(async () => {
-  //   sinon
-  //     .stub(Example, "findOne")
-  //     .resolves({
-  //       ...<Seu mock>
-  //     } as Example);
+  //   sinon.stub(TeamModel, 'findAll').resolves(teamsMock as TeamModel[]);
   // });
 
-  // after(()=>{
-  //   (Example.findOne as sinon.SinonStub).restore();
-  // })
-
-  // it('...', async () => {
-  //   chaiHttpResponse = await chai
-  //      .request(app)
-  //      ...
-
-  //   expect(...)
+  // after(() => {
+  //   (TeamModel.findAll as sinon.SinonStub).restore();
   // });
 
-  it('Seu sub-teste', () => {
-    expect(false).to.be.eq(true);
-  });
-});
+  // it('todos teams', async () => {
+  //   chaiHttpResponse = await chai.request(app).get('/teams');
+  //   expect(chaiHttpResponse.status).to.be.eq(200);
+  // });
+// });
