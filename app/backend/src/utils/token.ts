@@ -13,13 +13,4 @@ const criarToken = async (email: string) => {
   return token;
 };
 
-// const criarTokennn = async (id: number, username: string) => {
-//   const jwtConfig: object = {
-//     expiresIn: '7d',
-//     algorithm: 'HS256',
-//   };
-//   const token = jwt.sign({ payload: { id, username } }, secret, jwtConfig);
-//   return token;
-// };
-
 export default criarToken;

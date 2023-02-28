@@ -1,12 +1,11 @@
-// import { } from 'express';
 import { Router } from 'express';
-import UsersMiddleware from '../middleware/User.middleware';
+import UserMiddleware from '../middleware/user.middleware';
 import UsersController from '../controllers/Users.controller';
 
 class UserRoute {
   public route: Router;
   private controller: UsersController = new UsersController();
-  private middleware: UsersMiddleware = new UsersMiddleware();
+  private middlwaere: UserMiddleware = new UserMiddleware();
 
   constructor() {
     this.route = Router();
@@ -15,16 +14,7 @@ class UserRoute {
 
   private post(): void {
     this.route.post('/', (req, res) => {
-      const { email, password } = req.body;
-      if (email.length < 1 || !email) {
-        res.status(400).json({ message: 'All fields must be filled' });
-      }
-      if (password.length < 1 || !password) {
-        res.status(400).json({ message: 'All fields must be filled' });
-      }
-      if (password.length >= 1 || email.length >= 1) {
-        this.controller.findLogin(req, res);
-      }
+      this.controller.findUser(req, res);
     });
   }
 }

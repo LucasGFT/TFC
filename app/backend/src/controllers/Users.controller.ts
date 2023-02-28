@@ -1,25 +1,21 @@
 import { Request, Response } from 'express';
-import bcrypt = require('bcryptjs');
-import UsersService from '../services/Users.service';
-import criarToken from '../utils/token';
+import UserMiddleware from '../middleware/user.middleware';
+import UserService from '../services/Users.service';
 
-class UsersController {
-  private _service = new UsersService();
+class UserController {
+  private _service = new UserService();
+  private as = new UserMiddleware();
 
-  public async findLogin(req: Request, res: Response): Promise<void> {
+  public async findUser(req: Request, res: Response): Promise<void> {
+    const teste = await this.as.middlewareUser(req, res);
     const { email, password } = req.body;
-    const user = await this._service.findLogin(email);
-    if (user.type === null) {
-      // comparar senha criptada por bcryptjs
-      const a = bcrypt.compareSync(password, user.message.password);
-      if (a) {
-        // criando token
-        const token = await criarToken(email);
-        res.status(200).json({ token });
-      }
+    if (teste === true) {
+      const team = await this._service.findUser(email, password);
+      const { type, message } = team;
+      if (type === 200) res.status(type).json({ token: message });
+      if (type !== 200) res.status(type).json({ message });
     }
-    if (user.type !== null) res.status(400);
   }
 }
 
-export default UsersController;
+export default UserController;
