@@ -1,4 +1,4 @@
-// import { } from 'express';
+// import {} from 'express';
 import { Router } from 'express';
 import UserMiddleware from '../middleware/user.middleware';
 import UsersController from '../controllers/Users.controller';
