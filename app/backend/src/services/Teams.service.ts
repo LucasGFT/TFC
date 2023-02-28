@@ -9,7 +9,7 @@ class TeamsService {
   }
 
   public async findById(id: number) {
-    const team = await this.teams.findByPk(id);
+    const team = await this.teams.findOne({ where: { id } });
     return team;
   }
 }

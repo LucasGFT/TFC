@@ -15,7 +15,7 @@ const { expect } = chai;
 
 describe('.get no /team', () => {
   let chaiHttpResponse: Response;
-  
+
   before(async () => {
     sinon.stub(TeamModel, 'findAll').resolves(teamsMock as TeamModel[]);
   });
@@ -30,19 +30,40 @@ describe('.get no /team', () => {
   });
 });
 
+describe('pesquisar team por id', () => {
+  let chaiHttpResponse: Response;
+
+  const cruzeiro = '{"id":5,"teamName":"Cruzeiro"}';
+
+  before(async () => {
+    sinon
+      .stub(TeamModel, 'findOne')
+      .resolves({ id: 5, teamName: 'Cruzeiro' } as TeamModel);
+  });
+
+  after(() => {
+    (TeamModel.findOne as unknown as sinon.SinonStub).restore();
+  });
+
+  it('procurar somente um time(Cruzeiro)', async () => {
+    chaiHttpResponse = await chai.request(app).get('/teams/4');
+    expect(chaiHttpResponse.text).to.be.eq(cruzeiro);
+  });
+});
+
 // describe('.get team pelo id', () => {
-  // let chaiHttpResponse: Response;
+// let chaiHttpResponse: Response;
 
-  // before(async () => {
-  //   sinon.stub(TeamModel, 'findAll').resolves(teamsMock as TeamModel[]);
-  // });
+// before(async () => {
+//   sinon.stub(TeamModel, 'findAll').resolves(teamsMock as TeamModel[]);
+// });
 
-  // after(() => {
-  //   (TeamModel.findAll as sinon.SinonStub).restore();
-  // });
+// after(() => {
+//   (TeamModel.findAll as sinon.SinonStub).restore();
+// });
 
-  // it('todos teams', async () => {
-  //   chaiHttpResponse = await chai.request(app).get('/teams');
-  //   expect(chaiHttpResponse.status).to.be.eq(200);
-  // });
+// it('todos teams', async () => {
+//   chaiHttpResponse = await chai.request(app).get('/teams');
+//   expect(chaiHttpResponse.status).to.be.eq(200);
+// });
 // });
