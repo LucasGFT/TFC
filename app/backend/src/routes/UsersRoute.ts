@@ -1,9 +1,8 @@
-// import {} from 'express';
 import { Router } from 'express';
 import UserMiddleware from '../middleware/user.middleware';
 import UsersController from '../controllers/Users.controller';
 
-class TeamsRoute {
+class UserRoute {
   public route: Router;
   private controller: UsersController = new UsersController();
   private middlwaere: UserMiddleware = new UserMiddleware();
@@ -20,4 +19,4 @@ class TeamsRoute {
   }
 }
 
-export default TeamsRoute;
+export default UserRoute;

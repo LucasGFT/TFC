@@ -8,7 +8,7 @@ import { app } from '../app';
 import TeamModel from '../models/TeamsModel';
 
 import { Response } from 'superagent';
-import teamsMock from './testsModel/teamsMock';
+import teamsMock from './Mock/teamsMock';
 
 chai.use(chaiHttp);
 
