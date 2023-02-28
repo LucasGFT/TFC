@@ -1,11 +1,10 @@
+// import {} from 'express';
 import { Router } from 'express';
-import UserMiddleware from '../middleware/user.middleware';
 import UsersController from '../controllers/Users.controller';
 
 class UserRoute {
   public route: Router;
   private controller: UsersController = new UsersController();
-  private middlwaere: UserMiddleware = new UserMiddleware();
 
   constructor() {
     this.route = Router();

@@ -2,7 +2,7 @@ import bcrypt = require('bcryptjs');
 import criarToken from '../utils/token';
 import Users from '../models/UsersModel';
 
-class TeamsService {
+class UserService {
   private user = Users;
   public async findUser(email: string, password: string) {
     // if (email.length < 1 || password.length < 1)
@@ -16,4 +16,4 @@ class TeamsService {
   }
 }
 
-export default TeamsService;
+export default UserService;
