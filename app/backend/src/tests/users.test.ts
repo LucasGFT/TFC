@@ -11,7 +11,7 @@ import { app } from '../app';
 import { Response } from 'superagent';
 import {
   userEmailErrado,
-  userVerdadero,
+  userVerdadeiro,
   userSemSenha,
   userSemEmail,
   userSenhaErrada,
@@ -30,7 +30,7 @@ const { expect } = chai;
 // describe('.post no /user', async () => {
 //   let chaiHttpResponse: Response;
 //   // before(async () => {
-//   //   sinon.stub(UsersModel, 'findOne').resolves(userVerdadero as UsersModel);
+//   //   sinon.stub(UsersModel, 'findOne').resolves(userVerdadeiro as UsersModel);
 //   // });
 
 //   // after(() => {
@@ -41,7 +41,7 @@ const { expect } = chai;
 //   const r = new UserRoute();
 
 //   it('tem usuario no banco de dados', async () => {
-//     const c = b.findLogin(userVerdadero.email);
+//     const c = b.findLogin(userVerdadeiro.email);
 //     expect((await c).message?.username).to.be.eq('Admin');
 //   });
 //   it('nao tem usuario no banco de dados', async () => {
@@ -62,7 +62,7 @@ describe('procurando Users', () => {
     chaiHttpResponse = await chai
       .request(app)
       .post('/login')
-      .send(userVerdadero);
+      .send(userVerdadeiro);
     expect(chaiHttpResponse.status).to.be.eq(200);
   });
 
@@ -88,11 +88,11 @@ describe('procurando Users', () => {
   });
 
   it('conferindoToken', async () => {
-    const token = await criarToken(userVerdadero.email);
+    const token = await criarToken(userVerdadeiro.email);
     chaiHttpResponse = await chai
       .request(app)
       .post('/login')
-      .send(userVerdadero);
+      .send(userVerdadeiro);
     expect(chaiHttpResponse.status).to.be.eq(200);
     expect(chaiHttpResponse.text).to.be.eq(`{"token":"${token}"}`);
   });
@@ -128,5 +128,44 @@ describe('procurando Users', () => {
     expect(chaiHttpResponse.text).to.be.eq(
       `{"message":"Invalid email or password"}`
     );
+  });
+});
+
+describe('teste rota /login/role', () => {
+  const b = new UserService();
+  let chaiHttpResponse: Response;
+  const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhI
+  jp7ImVtYWlsIjoidXNlckB1c2VyLmNvbSJ9LCJpYXQiOjE2Nzc3MDk1NjQsImV
+  4cCI6MTY3ODMxNDM2NH0.mM-6WWs1oUPViAXqkMvBFXKAvOmx1Trsz2y4QXI0Opc`;
+
+  it('nao exite header Authorization', async () => {
+    chaiHttpResponse = await chai.request(app).get('/login/role');
+    expect(chaiHttpResponse.text).to.be.eq('{"message":"Token not found"}');
+  });
+
+  it('existe header Authorization mas ta errado ', async () => {
+    chaiHttpResponse = await chai
+      .request(app)
+      .get('/login/role')
+      .set({ Authorization: 'teste' });
+    expect(chaiHttpResponse.text).to.be.eq(
+      '{"message":"Token must be a valid token"}'
+    );
+  });
+
+  it(' header Authorization certo ', async () => {
+    chaiHttpResponse = await chai.request(app).get('/login/role').set({
+      Authorization:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImVtYWlsIjoidXNlckB1c2VyLmNvbSJ9LCJpYXQiOjE2Nzc3MDk1NjQsImV4cCI6MTY3ODMxNDM2NH0.mM-6WWs1oUPViAXqkMvBFXKAvOmx1Trsz2y4QXI0Opc',
+    });
+    expect(chaiHttpResponse.text).to.be.eq('{"role":"user"}');
+  });
+
+  it('aaaa', async () => {
+    chaiHttpResponse = await chai.request(app).get('/login/role').set({
+      Authorization:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImVtYWlsIjoidGVzdGVAdGVzdGUuY29tIn0sImlhdCI6MTY3NzcxMDI2MSwiZXhwIjoxNjc4MzE1MDYxfQ.28GqGESkdOrjKmksMdpc7u8Vg0ZXW0c0ocYBrbiUmCE',
+    });
+    expect(chaiHttpResponse.text).to.be.eq('{"role":"Invalid email or password"}');
   });
 });

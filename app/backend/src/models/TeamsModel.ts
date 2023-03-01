@@ -1,6 +1,6 @@
 import { Model, INTEGER, STRING } from 'sequelize';
-import db from '.';
 import MatchesModel from './MatchesModel';
+import db from '.';
 // import OtherModel from './OtherModel';
 
 class TeamsModel extends Model {
@@ -31,9 +31,23 @@ TeamsModel.init(
   },
 );
 
-TeamsModel.hasMany(MatchesModel, { foreignKey: 'id', as: 'home_team_id' });
-TeamsModel.hasMany(MatchesModel, { foreignKey: 'id', as: 'away_team_id' });
+TeamsModel.hasMany(MatchesModel, {
+  foreignKey: 'homeTeamId',
+  as: 'matcheHome',
+});
+TeamsModel.hasMany(MatchesModel, {
+  foreignKey: 'awayTeamId',
+  as: 'matcheAway',
+});
 
+MatchesModel.belongsTo(TeamsModel, {
+  foreignKey: 'homeTeamId',
+  as: 'homeTeam',
+});
+MatchesModel.belongsTo(TeamsModel, {
+  foreignKey: 'awayTeamId',
+  as: 'awayTeam',
+});
 /**
  * `Workaround` para aplicar as associations em TS:
  * Associations 1:N devem ficar em uma das instâncias de modelo

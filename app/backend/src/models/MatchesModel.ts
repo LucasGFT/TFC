@@ -23,6 +23,12 @@ MatchesModel.init(
     homeTeamId: {
       allowNull: false,
       type: INTEGER,
+      references: {
+        model: 'team',
+        key: 'id',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     homeTeamGoals: {
       allowNull: false,
@@ -31,6 +37,12 @@ MatchesModel.init(
     awayTeamId: {
       allowNull: false,
       type: INTEGER,
+      references: {
+        model: 'team',
+        key: 'id',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     awayTeamGoals: {
       allowNull: false,
