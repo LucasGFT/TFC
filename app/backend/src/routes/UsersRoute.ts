@@ -8,12 +8,15 @@ class UserRoute {
 
   constructor() {
     this.route = Router();
-    this.post();
+    this.rotas();
   }
 
-  private post(): void {
+  private rotas(): void {
     this.route.post('/', (req, res) => {
       this.controller.findUser(req, res);
+    });
+    this.route.get('/role', (req, res) => {
+      this.controller.getUser(req, res);
     });
   }
 }
