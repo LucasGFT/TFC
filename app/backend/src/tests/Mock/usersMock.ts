@@ -1,4 +1,4 @@
-const userVerdadero = {
+const userVerdadeiro = {
   "email": "admin@admin.com",
   "password": "secret_admin"
 };
@@ -42,7 +42,7 @@ const userSenhaErrada = {
 export {
   userSemEmail,
   userSemSenha,
-  userVerdadero,
+  userVerdadeiro,
   userEmailErrado,
   userEmailErrado2,
   arrayUser,

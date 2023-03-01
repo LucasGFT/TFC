@@ -1,14 +1,17 @@
-import { Model, INTEGER, STRING } from 'sequelize';
+import { Model, INTEGER, BOOLEAN } from 'sequelize';
 import db from '.';
-import MatchesModel from './MatchesModel';
 // import OtherModel from './OtherModel';
 
-class TeamsModel extends Model {
+class MatchesModel extends Model {
   declare id: number;
-  declare teamName: string;
+  declare homeTeamId: number;
+  declare homeTeamGoals: number;
+  declare awayTeamId: number;
+  declare awayTeamGoals: number;
+  declare inProgress: boolean;
 }
 
-TeamsModel.init(
+MatchesModel.init(
   {
     // ... Campos
     id: {
@@ -17,22 +20,35 @@ TeamsModel.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    teamName: {
+    homeTeamId: {
       allowNull: false,
-      type: STRING,
+      type: INTEGER,
+    },
+    homeTeamGoals: {
+      allowNull: false,
+      type: INTEGER,
+    },
+    awayTeamId: {
+      allowNull: false,
+      type: INTEGER,
+    },
+    awayTeamGoals: {
+      allowNull: false,
+      type: INTEGER,
+    },
+    inProgress: {
+      allowNull: false,
+      type: BOOLEAN,
     },
   },
   {
     // ... Outras configs
     underscored: true,
     sequelize: db,
-    modelName: 'team',
+    modelName: 'matches',
     timestamps: false,
   },
 );
-
-TeamsModel.hasMany(MatchesModel, { foreignKey: 'id', as: 'home_team_id' });
-TeamsModel.hasMany(MatchesModel, { foreignKey: 'id', as: 'away_team_id' });
 
 /**
  * `Workaround` para aplicar as associations em TS:
@@ -42,7 +58,6 @@ TeamsModel.hasMany(MatchesModel, { foreignKey: 'id', as: 'away_team_id' });
 // OtherModel.belongsTo(Example, { foreignKey: 'campoA', as: 'campoEstrangeiroA' });
 // OtherModel.belongsTo(Example, { foreignKey: 'campoB', as: 'campoEstrangeiroB' });
 
-// Example.hasMany(OtherModel, { foreignKey: 'campoC', as: 'campoEstrangeiroC' });
 // Example.hasMany(OtherModel, { foreignKey: 'campoD', as: 'campoEstrangeiroD' });
 
-export default TeamsModel;
+export default MatchesModel;
