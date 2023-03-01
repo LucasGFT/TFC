@@ -29,6 +29,11 @@ const userEmailErrado = {
   "password": "secret_admin"
 };
 
+const userEmailErrado2 = {
+  "email": "admin@admisn.com",
+  "password": "secret_admin"
+};
+
 const userSenhaErrada = {
   "email": "admin@admin.com",
   "password": "senhaerrada"
@@ -39,6 +44,7 @@ export {
   userSemSenha,
   userVerdadero,
   userEmailErrado,
+  userEmailErrado2,
   arrayUser,
   userSenhaErrada
 };

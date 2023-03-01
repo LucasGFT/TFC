@@ -1,5 +1,7 @@
 import * as chai from 'chai';
 import * as sinon from 'sinon';
+import * as bcrypt from 'bcryptjs';
+import criarToken from '../utils/token';
 // @ts-ignore
 
 import chaiHttp = require('chai-http');
@@ -13,6 +15,7 @@ import {
   userSemSenha,
   userSemEmail,
   userSenhaErrada,
+  userEmailErrado2,
 } from './Mock/usersMock';
 import UsersModel from '../models/UsersModel';
 import UserService from '../services/Users.service';
@@ -80,19 +83,50 @@ describe('procurando Users', () => {
   });
 
   it('nao tem usuario no banco de dados', async () => {
-    const c = b.findLogin(userEmailErrado.email);
-    expect((await c).type).to.be.eq('naoAchouUser');
+    const c = b.findUser(userEmailErrado.email, userEmailErrado.password);
+    expect((await c).type).to.be.eq(401);
+  });
+
+  it('conferindoToken', async () => {
+    const token = await criarToken(userVerdadero.email);
+    chaiHttpResponse = await chai
+      .request(app)
+      .post('/login')
+      .send(userVerdadero);
+    expect(chaiHttpResponse.status).to.be.eq(200);
+    expect(chaiHttpResponse.text).to.be.eq(`{"token":"${token}"}`);
+  });
+
+  it('passando senha errada', async () => {
+    chaiHttpResponse = await chai
+      .request(app)
+      .post('/login')
+      .send(userSenhaErrada);
+    expect(chaiHttpResponse.status).to.be.eq(401);
+    expect(chaiHttpResponse.text).to.be.eq(
+      `{"message":"Invalid email or password"}`
+    );
+  });
+
+  it('passando email invalido', async () => {
+    chaiHttpResponse = await chai
+      .request(app)
+      .post('/login')
+      .send(userEmailErrado);
+    expect(chaiHttpResponse.status).to.be.eq(401);
+    expect(chaiHttpResponse.text).to.be.eq(
+      `{"message":"Invalid email or password"}`
+    );
+  });
+
+  it('passando email valido, mas errado', async () => {
+    chaiHttpResponse = await chai
+      .request(app)
+      .post('/login')
+      .send(userEmailErrado2);
+    expect(chaiHttpResponse.status).to.be.eq(401);
+    expect(chaiHttpResponse.text).to.be.eq(
+      `{"message":"Invalid email or password"}`
+    );
   });
 });
-
-// describe('asalsasmasl', () => {
-//   let chaiHttpResponse: Response;
-//   it('senha errada', async () => {
-//     chaiHttpResponse = await chai
-//       .request(app)
-//       .post('/login')
-//       .send(userSenhaErrada);
-
-//     expect(chaiHttpResponse.status).to.be.eq(200);
-//   });
-// });
