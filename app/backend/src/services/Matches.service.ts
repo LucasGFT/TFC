@@ -23,5 +23,9 @@ class MatchesService {
     });
     return matches;
   }
+
+  public async finalizarPartida(id: number) {
+    await this.matches.update({ inProgress: 0 }, { where: { id } });
+  }
 }
 export default MatchesService;

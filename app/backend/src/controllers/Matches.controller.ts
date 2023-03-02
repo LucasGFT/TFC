@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
+import UserMiddleware from '../middleware/user.middleware';
 import MatchesService from '../services/Matches.service';
+import UserService from '../services/Users.service';
 
 class UserController {
   private teste = 'samal';
+  private _service = new UserService();
+  private matchesMiddleware = new UserMiddleware();
   private matchesService = new MatchesService();
 
   public async getMatches(req: Request, res: Response): Promise<void> {
@@ -19,9 +23,15 @@ class UserController {
     }
   }
 
-  public async testes(req: Request, res: Response): Promise<void> {
-    console.log(this.teste);
-    res.status(200).json(req);
+  public async finishMatches(req: Request, res: Response): Promise<void> {
+    const result = await this.matchesMiddleware.tokenValid(req, res);
+    const { id } = req.params;
+    const { message } = result;
+    if (result.type === 200) {
+      await this.matchesService.finalizarPartida(Number(id));
+      res.status(200).json({ message: 'Finished' });
+    }
+    if (result.type !== 200) res.status(401).json({ message });
   }
 }
 

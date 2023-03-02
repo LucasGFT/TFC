@@ -7,12 +7,15 @@ class TeamsRoute {
 
   constructor() {
     this.route = Router();
-    this.get();
+    this.rotas();
   }
 
-  private get(): void {
+  private rotas(): void {
     this.route.get('/', (req, res) => {
       this.controller.getMatches(req, res);
+    });
+    this.route.patch('/:id/finish', (req, res) => {
+      this.controller.finishMatches(req, res);
     });
   }
 }
