@@ -1,9 +1,14 @@
 import { Request, Response } from 'express';
+import TeamsService from '../services/Teams.service';
 import { validaToken } from '../utils/token';
 
 class UserMiddleware {
   private valida =
   /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/;
+
+  private timesIguais = 'It is not possible to create a match with two equal teams';
+
+  public teams = new TeamsService();
 
   private token: string | undefined;
 
@@ -33,10 +38,25 @@ class UserMiddleware {
   ): Promise<{ type: string | null | number; message: string }> {
     this.token = req.header('Authorization');
     const payload = validaToken(this.token);
-    if (this.token === undefined) { return { type: 401, message: 'Token not found' }; }
+    if (this.token === undefined) {
+      return { type: 401, message: 'Token not found' };
+    }
 
-    if (payload && typeof payload === 'object') return { type: 200, message: payload.data.email };
+    if (payload && typeof payload === 'object') {
+      return { type: 200, message: payload.data.email };
+    }
     return { type: 401, message: 'Token must be a valid token' };
+  }
+
+  public async matchesValid(
+    req: Request,
+    _res: Response,
+  ): Promise<{ type: number ; message: string | number } | null> {
+    const { homeTeamId, awayTeamId } = req.body;
+    const lastId = await this.teams.findLastId(homeTeamId, awayTeamId);
+    if (lastId !== null) return { type: 404, message: 'There is no team with such id!' };
+    if (homeTeamId === awayTeamId) return { type: 422, message: this.timesIguais };
+    return null;
   }
 }
 

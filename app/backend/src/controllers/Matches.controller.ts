@@ -52,16 +52,25 @@ class UserController {
 
   public async createMatches(req: Request, res: Response) {
     const tokenResult = await this.matchesMiddleware.tokenValid(req, res);
+    const matchesValid = await this.matchesMiddleware.matchesValid(req, res);
+    // const lastId = await this.matchesMiddleware.teams
     const create = req.body;
     create.inProgress = true;
     const { message } = tokenResult;
 
-    if (tokenResult.type === 200) {
-      const result = await this.matchesService.createMatches(create);
-      res.status(201).json(result);
-    }
-
     if (tokenResult.type !== 200) res.status(401).json({ message });
+
+    if (tokenResult.type === 200) {
+      if (matchesValid === null) {
+        const result = await this.matchesService.createMatches(create);
+        res.status(201).json(result);
+      }
+      if (matchesValid !== null) {
+        res.status(
+          matchesValid.type,
+        ).json({ message: matchesValid.message });
+      }
+    }
   }
 }
 
