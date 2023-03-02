@@ -161,11 +161,13 @@ describe('teste rota /login/role', () => {
     expect(chaiHttpResponse.text).to.be.eq('{"role":"user"}');
   });
 
-  it('aaaa', async () => {
+  it('token de usuario que nao tem no banco de dados', async () => {
     chaiHttpResponse = await chai.request(app).get('/login/role').set({
       Authorization:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImVtYWlsIjoidGVzdGVAdGVzdGUuY29tIn0sImlhdCI6MTY3NzcxMDI2MSwiZXhwIjoxNjc4MzE1MDYxfQ.28GqGESkdOrjKmksMdpc7u8Vg0ZXW0c0ocYBrbiUmCE',
     });
-    expect(chaiHttpResponse.text).to.be.eq('{"role":"Invalid email or password"}');
+    expect(chaiHttpResponse.text).to.be.eq(
+      '{"role":"Invalid email or password"}'
+    );
   });
 });

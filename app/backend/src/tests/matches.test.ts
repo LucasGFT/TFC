@@ -104,3 +104,72 @@ describe('rota /matches/:id', () => {
     expect(chaiHttpResponse.status).to.be.eq(200);
   });
 });
+
+describe('rota /matches .post', () => {
+  let chaiHttpResponse: Response;
+
+  it('erro token invalido', async () => {
+    chaiHttpResponse = await chai.request(app).post('/matches').set({
+      Authorization:
+        'errado',
+    });
+    expect(chaiHttpResponse.text).to.be.eq('{"message":"Token must be a valid token"}');
+    expect(chaiHttpResponse.status).to.be.eq(401);
+  });
+
+  it('token valido, mas erro por nao existir time com esse id', async () => {
+    chaiHttpResponse = await chai.request(app).post('/matches').set({
+      Authorization:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImVtYWlsIjoidGVzdGVAdGVzdGUuY29tIn0sImlhdCI6MTY3NzcxMDI2MSwiZXhwIjoxNjc4MzE1MDYxfQ.28GqGESkdOrjKmksMdpc7u8Vg0ZXW0c0ocYBrbiUmCE',
+    }).send({
+      "homeTeamId": 1699,
+      "awayTeamId": 8,
+      "homeTeamGoals": 2,
+      "awayTeamGoals": 2,
+    });
+    expect(chaiHttpResponse.text).to.be.eq('{"message":"There is no team with such id!"}');
+    expect(chaiHttpResponse.status).to.be.eq(404);
+  });
+
+  it('token valido, mas erro por serem dois times iguais', async () => {
+    chaiHttpResponse = await chai.request(app).post('/matches').set({
+      Authorization:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImVtYWlsIjoidGVzdGVAdGVzdGUuY29tIn0sImlhdCI6MTY3NzcxMDI2MSwiZXhwIjoxNjc4MzE1MDYxfQ.28GqGESkdOrjKmksMdpc7u8Vg0ZXW0c0ocYBrbiUmCE',
+    }).send({
+      "homeTeamId": 8,
+      "awayTeamId": 8,
+      "homeTeamGoals": 2,
+      "awayTeamGoals": 2,
+    });
+    expect(chaiHttpResponse.text).to.be.eq('{"message":"It is not possible to create a match with two equal teams"}');
+    expect(chaiHttpResponse.status).to.be.eq(422);
+  });
+
+  it('é possivel criar match', async () => {
+    sinon.stub(MatchesModel, 'create').resolves(arrayMatches[0] as MatchesModel);
+    chaiHttpResponse = await chai.request(app).post('/matches').set({
+      Authorization:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImVtYWlsIjoidGVzdGVAdGVzdGUuY29tIn0sImlhdCI6MTY3NzcxMDI2MSwiZXhwIjoxNjc4MzE1MDYxfQ.28GqGESkdOrjKmksMdpc7u8Vg0ZXW0c0ocYBrbiUmCE',
+    }).send({
+      "homeTeamId": 16,
+      "awayTeamId": 8,
+      "homeTeamGoals": 2,
+      "awayTeamGoals": 2,
+    })
+    expect(chaiHttpResponse.status).to.be.eq(201);
+    expect(JSON.parse(chaiHttpResponse.text).homeTeamId).to.be.eq(16);
+    expect(JSON.parse(chaiHttpResponse.text).awayTeamId).to.be.eq(8);
+  })
+
+  // it('alterar partida em andamento', async () => {
+  //   chaiHttpResponse = await chai.request(app).patch('/matches/5').set({
+  //     Authorization:
+  //       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImVtYWlsIjoidGVzdGVAdGVzdGUuY29tIn0sImlhdCI6MTY3NzcxMDI2MSwiZXhwIjoxNjc4MzE1MDYxfQ.28GqGESkdOrjKmksMdpc7u8Vg0ZXW0c0ocYBrbiUmCE',
+  //   }).send({
+  //     "homeTeamGoals": 3,
+  //     "awayTeamGoals": 1
+  //   });
+  //   expect(chaiHttpResponse.text).to.be.eq('"partida alterada"');
+  //   expect(chaiHttpResponse.status).to.be.eq(200);
+  // });
+});
