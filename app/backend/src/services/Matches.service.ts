@@ -28,6 +28,17 @@ class MatchesService {
     await this.matches.update({ inProgress: 0 }, { where: { id } });
   }
 
+  public async createMatches(obj: {
+    homeTeamId: number;
+    awayTeamId: number;
+    homeTeamGoals: number;
+    awayTeamGoals: number;
+    inProgress: boolean;
+  }) {
+    const result = await this.matches.create(obj);
+    return result;
+  }
+
   public async updateMatches(
     id: number,
     obj: { homeTeamGoals: number; awayTeamGoals: number },
@@ -39,4 +50,5 @@ class MatchesService {
     );
   }
 }
+
 export default MatchesService;

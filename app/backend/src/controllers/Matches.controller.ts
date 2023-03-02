@@ -49,6 +49,20 @@ class UserController {
     }
     if (tokenResult.type !== 200) res.status(401).json({ message });
   }
+
+  public async createMatches(req: Request, res: Response) {
+    const tokenResult = await this.matchesMiddleware.tokenValid(req, res);
+    const create = req.body;
+    create.inProgress = true;
+    const { message } = tokenResult;
+
+    if (tokenResult.type === 200) {
+      const result = await this.matchesService.createMatches(create);
+      res.status(201).json(result);
+    }
+
+    if (tokenResult.type !== 200) res.status(401).json({ message });
+  }
 }
 
 export default UserController;
