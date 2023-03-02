@@ -33,6 +33,22 @@ class UserController {
     }
     if (result.type !== 200) res.status(401).json({ message });
   }
+
+  public async updateMatches(req: Request, res: Response) {
+    const tokenResult = await this.matchesMiddleware.tokenValid(req, res);
+    const { id } = req.params;
+    // const teste = {
+    //   homeTeamGoals: 3,
+    //   awayTeamGoals: 1,
+    // };
+    // const { homeTeamGoals, awayTeamGoals } = req.body;
+    const { message } = tokenResult;
+    if (tokenResult.type === 200) {
+      await this.matchesService.updateMatches(Number(id), req.body);
+      res.status(200).json('partida alterada');
+    }
+    if (tokenResult.type !== 200) res.status(401).json({ message });
+  }
 }
 
 export default UserController;

@@ -17,6 +17,9 @@ class TeamsRoute {
     this.route.patch('/:id/finish', (req, res) => {
       this.controller.finishMatches(req, res);
     });
+    this.route.patch('/:id', (req, res) => {
+      this.controller.updateMatches(req, res);
+    });
   }
 }
 
