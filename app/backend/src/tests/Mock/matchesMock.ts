@@ -29,7 +29,7 @@ const arrayMatches = [
     homeTeamGoals: 0,
     awayTeamId: 2,
     awayTeamGoals: 0,
-    inProgress: false,
+    inProgress: true,
   },
   {
     id: 5,
@@ -37,7 +37,7 @@ const arrayMatches = [
     homeTeamGoals: 1,
     awayTeamId: 10,
     awayTeamGoals: 1,
-    inProgress: false,
+    inProgress: true,
   },
   {
     id: 6,
@@ -45,7 +45,7 @@ const arrayMatches = [
     homeTeamGoals: 1,
     awayTeamId: 13,
     awayTeamGoals: 1,
-    inProgress: false,
+    inProgress: true,
   },
 ];
 
