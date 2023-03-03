@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import MatchesController from '../controllers/Matches.controller';
 
-class TeamsRoute {
+class MatchRoute {
   public route: Router;
   private controller: MatchesController = new MatchesController();
 
@@ -26,4 +26,4 @@ class TeamsRoute {
   }
 }
 
-export default TeamsRoute;
+export default MatchRoute;

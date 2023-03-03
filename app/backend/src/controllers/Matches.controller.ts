@@ -72,6 +72,15 @@ class UserController {
       }
     }
   }
+
+  // public async testes() {
+  //   const a = await this.matchesService.test();
+  //   console.log(a);
+  // }
 }
+
+// const aaa = new UserController();
+
+// aaa.testes();
 
 export default UserController;

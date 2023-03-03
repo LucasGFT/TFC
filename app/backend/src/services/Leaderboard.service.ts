@@ -1,7 +1,6 @@
-import TeamsModel from '../models/TeamsModel';
 import Matches from '../models/MatchesModel';
 
-class MatchesService {
+class Leaderboard {
   private arr: { id: number; totalPoints: number; totalGames: number; totalVictories: number;
     totalLosses: number; totalDraws: number; goalsFavor: number; goalsOwn: number; }[] = [{
     id: 1,
@@ -13,6 +12,12 @@ class MatchesService {
     goalsFavor: 0,
     goalsOwn: 0,
   }];
+
+  private ass = Matches.findAll({
+    where: { inProgress: false },
+    order: [['homeTeamId', 'ASC']],
+    attributes: { exclude: ['id'] },
+  });
 
   private oooo = { id: 0,
     totalPoints: 0,
@@ -29,60 +34,6 @@ class MatchesService {
     totalVictories: 0,
     totalDraws: 0,
     totalLosses: 0 };
-
-  private teamModel = TeamsModel;
-  private matches = Matches;
-  private ass = Matches.findAll({
-    where: { inProgress: false },
-    order: [['homeTeamId', 'ASC']],
-    attributes: { exclude: ['id'] },
-  });
-
-  private includes = [
-    { model: this.teamModel, as: 'homeTeam', attributes: ['teamName'] },
-    { model: this.teamModel, as: 'awayTeam', attributes: ['teamName'] },
-  ];
-
-  public async findAll() {
-    const matches = await this.matches.findAll({
-      include: this.includes,
-    });
-    return matches;
-  }
-
-  public async findMatchesInProgress(inProgress: boolean) {
-    const matches = await this.matches.findAll({
-      where: { inProgress },
-      include: this.includes,
-    });
-    return matches;
-  }
-
-  public async finalizarPartida(id: number) {
-    await this.matches.update({ inProgress: 0 }, { where: { id } });
-  }
-
-  public async createMatches(obj: {
-    homeTeamId: number;
-    awayTeamId: number;
-    homeTeamGoals: number;
-    awayTeamGoals: number;
-    inProgress: boolean;
-  }) {
-    const result = await this.matches.create(obj);
-    return result;
-  }
-
-  public async updateMatches(
-    id: number,
-    obj: { homeTeamGoals: number; awayTeamGoals: number },
-  ) {
-    const { homeTeamGoals, awayTeamGoals } = obj;
-    await this.matches.update(
-      { homeTeamGoals, awayTeamGoals },
-      { where: { id } },
-    );
-  }
 
   public async colocarResultados(homeTeamGoals: number, awayTeamGoals: number, a: boolean) {
     let obj;
@@ -142,12 +93,4 @@ class MatchesService {
   }
 }
 
-// const ass = async () => {
-//   const teste = new MatchesService();
-//   const a = await teste.test();
-//   console.log(a);
-// };
-
-// ass();
-
-export default MatchesService;
+export default Leaderboard;

@@ -10,6 +10,7 @@ class TeamsService {
 
   public async findById(id: number) {
     const team = await this.teams.findOne({ where: { id } });
+    console.log(team);
     return team;
   }
 
