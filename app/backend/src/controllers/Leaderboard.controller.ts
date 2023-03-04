@@ -6,8 +6,16 @@ class UserController {
 
   public async testes(_req: Request, res: Response): Promise<void> {
     const t = await this.leaderboard.test();
-    console.log(t);
-    res.status(200).json(t);
+    const s = t.map(({ goalsFavor, goalsOwn, name, totalDraws, totalGames, totalLosses,
+      totalPoints, totalVictories }) => ({ name,
+      totalPoints,
+      totalGames,
+      totalVictories,
+      totalDraws,
+      totalLosses,
+      goalsFavor,
+      goalsOwn }));
+    res.status(200).json(s);
   }
 }
 
