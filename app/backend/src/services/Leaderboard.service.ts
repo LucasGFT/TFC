@@ -47,10 +47,8 @@ class Leaderboard {
     totalPoints: number; totalLosses: number; totalDraws: number }) {
     const obj = objj;
     if (homeTeamGoals > awayTeamGoals) { obj.totalVictories += 1; obj.totalPoints += 3; }
-    if (homeTeamGoals < awayTeamGoals) obj.totalLosses += 1;
+    if (homeTeamGoals < awayTeamGoals) obj.totalLosses += (this.zero + 1);
     if (homeTeamGoals === awayTeamGoals) { obj.totalDraws += 1; obj.totalPoints += 1; }
-    return null;
-    console.log(this.zero);
   }
 
   public async colocarResultados(homeTeamGoals: number, awayTeamGoals: number, a: boolean) {
@@ -111,11 +109,8 @@ class Leaderboard {
 
     // }
     const s = this.arr;
-    console.log(s);
     return s;
   }
 }
-// const a = new Leaderboard();
-// a.test();
 
 export default Leaderboard;
