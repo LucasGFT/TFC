@@ -2,7 +2,7 @@ import TeamsModel from '../models/TeamsModel';
 import Matches from '../models/MatchesModel';
 import TeamsService from './Teams.service';
 
-class Leaderboard {
+class LeaderboardService {
   private todosTeam: TeamsModel[] = [];
   private zero = 0;
   private arr: { id: number; name: string; totalPoints: number; totalGames: number;
@@ -109,8 +109,10 @@ class Leaderboard {
 
     // }
     const s = this.arr;
+    // eslint-disable-next-line max-len
+    this.arr = [{ id: 1, name: '', totalPoints: 0, totalGames: 0, totalVictories: 0, totalDraws: 0, totalLosses: 0, goalsFavor: 0, goalsOwn: 0 }];
     return s;
   }
 }
 
-export default Leaderboard;
+export default LeaderboardService;

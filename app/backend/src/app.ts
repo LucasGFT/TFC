@@ -1,14 +1,14 @@
 import * as express from 'express';
 import TeamsRoute from './routes/TeamsRoute';
 import UserRoute from './routes/UsersRoute';
-import MatchesRoute from './routes/MatchesRoute';
+import MatchRoute from './routes/MatchesRoute';
 import LeaderboardRoute from './routes/LeaderboardRoute';
 
 class App {
   public app: express.Express;
   private teamRoutes: TeamsRoute = new TeamsRoute();
   private userRoutes: UserRoute = new UserRoute();
-  private matcheRoutes: MatchesRoute = new MatchesRoute();
+  private matcheRoutes: MatchRoute = new MatchRoute();
   private leaderboard: LeaderboardRoute = new LeaderboardRoute();
 
   constructor() {
@@ -41,7 +41,6 @@ class App {
   public routes(): void {
     this.app.use('/teams', this.teamRoutes.route);
     this.app.use('/login', this.userRoutes.route);
-    this.app.use('/matches', this.matcheRoutes.route);
     this.app.use('/matches', this.matcheRoutes.route);
     this.app.use('/leaderboard', this.leaderboard.route);
   }

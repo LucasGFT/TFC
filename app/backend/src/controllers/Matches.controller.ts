@@ -1,11 +1,8 @@
 import { Request, Response } from 'express';
 import UserMiddleware from '../middleware/user.middleware';
 import MatchesService from '../services/Matches.service';
-import UserService from '../services/Users.service';
 
 class UserController {
-  private teste = 'samal';
-  private _service = new UserService();
   private matchesMiddleware = new UserMiddleware();
   private matchesService = new MatchesService();
 
@@ -37,11 +34,6 @@ class UserController {
   public async updateMatches(req: Request, res: Response) {
     const tokenResult = await this.matchesMiddleware.tokenValid(req, res);
     const { id } = req.params;
-    // const teste = {
-    //   homeTeamGoals: 3,
-    //   awayTeamGoals: 1,
-    // };
-    // const { homeTeamGoals, awayTeamGoals } = req.body;
     const { message } = tokenResult;
     if (tokenResult.type === 200) {
       await this.matchesService.updateMatches(Number(id), req.body);
@@ -53,7 +45,6 @@ class UserController {
   public async createMatches(req: Request, res: Response) {
     const tokenResult = await this.matchesMiddleware.tokenValid(req, res);
     const matchesValid = await this.matchesMiddleware.matchesValid(req, res);
-    // const lastId = await this.matchesMiddleware.teams
     const create = req.body;
     create.inProgress = true;
     const { message } = tokenResult;
@@ -72,15 +63,6 @@ class UserController {
       }
     }
   }
-
-  // public async testes() {
-  //   const a = await this.matchesService.test();
-  //   console.log(a);
-  // }
 }
-
-// const aaa = new UserController();
-
-// aaa.testes();
 
 export default UserController;
