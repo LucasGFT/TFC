@@ -5,6 +5,16 @@ import TeamsService from './Teams.service';
 class LeaderboardService {
   private todosTeam: TeamsModel[] = [];
   private zero = 0;
+  private objReiniciado = { id: 1,
+    name: '',
+    totalPoints: 0,
+    totalGames: 0,
+    totalVictories: 0,
+    totalDraws: 0,
+    totalLosses: 0,
+    goalsFavor: 0,
+    goalsOwn: 0 };
+
   private arr: { id: number; name: string; totalPoints: number; totalGames: number;
     totalVictories: number; totalLosses: number; totalDraws: number; goalsFavor: number;
     goalsOwn: number; }[] = [{
@@ -105,14 +115,9 @@ class LeaderboardService {
         goalsOwn: 0 };
       await this.somarss(e);
     });
-    // const soma = () => {
-
-    // }
     const s = this.arr;
-    // eslint-disable-next-line max-len
-    this.arr = [{ id: 1, name: '', totalPoints: 0, totalGames: 0, totalVictories: 0, totalDraws: 0, totalLosses: 0, goalsFavor: 0, goalsOwn: 0 }];
+    this.arr = [this.objReiniciado];
     return s;
   }
 }
-
 export default LeaderboardService;
