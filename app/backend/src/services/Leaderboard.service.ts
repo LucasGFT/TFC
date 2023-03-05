@@ -184,64 +184,44 @@ class LeaderboardService {
     const resultado = await this.colocarEmOrder(result, p); return resultado;
   }
 
-  // public async somarEmArrayHomeAway(objI: any, obji: any) {
-  //   const a = {
-  //     name: objI.name,
-  //     totalPoints: objI.totalPoints + obji.totalPoints,
-  //     totalGames: objI.totalGames + obji.totalGames,
-  //     totalVictories: objI.totalVictories + obji.totalVictories,
-  //     totalDraws: objI.totalDraws + obji.totalDraws,
-  //     totalLosses: objI.totalLosses + obji.totalLosses,
-  //     goalsFavor: objI.goalsFavor + obji.goalsFavor,
-  //     goalsOwn: objI.goalsOwn + obji.goalsOwn,
-  //     goalsBalance: objI.goalsBalance + obji.goalsBalance,
-  //     efficiency: Number((objI.efficiency + obji.efficiency).toFixed(2)),
-  //   };
-  //   return a;
-  //   console.log(this.zero);
-  // }
+  public somarEmArrayHomeAway(objI: { totalPoints: number; goalsFavor: number; goalsOwn: number;
+    goalsBalance: number; name: string; totalDraws: number; totalGames: number;
+    totalVictories: number; efficiency: number; totalLosses: number; }, obji: {
+    totalPoints: number; goalsFavor: number; goalsOwn: number; goalsBalance: number; name: string;
+    totalDraws: number; totalGames: number; totalVictories: number; efficiency: number;
+    totalLosses: number; }) {
+    const a = { name: objI.name,
+      totalPoints: objI.totalPoints + obji.totalPoints,
+      totalGames: objI.totalGames + obji.totalGames,
+      totalVictories: objI.totalVictories + obji.totalVictories,
+      totalDraws: objI.totalDraws + obji.totalDraws,
+      totalLosses: objI.totalLosses + obji.totalLosses,
+      goalsFavor: objI.goalsFavor + obji.goalsFavor,
+      goalsOwn: objI.goalsOwn + obji.goalsOwn,
+      goalsBalance: objI.goalsBalance + obji.goalsBalance,
+      efficiency: Number((((objI.totalPoints + obji.totalPoints) / (
+        (objI.totalGames + obji.totalGames) * 3)) * 100).toFixed(2)),
+    }; return a;
+    console.log(this.zero);
+  }
 
-  // eslint-disable-next-line max-lines-per-function
-//   public async colocarEmOrderArrayHomeAway() {
-//     const arrT = [...await this.criarArray(true), ...await this.criarArray(false)];
-//     let array: { name: string,
-//       totalPoints: number,
-//       totalGames: number,
-//       totalVictories: number,
-//       totalDraws: number,
-//       totalLosses: number,
-//       goalsFavor: number,
-//       goalsOwn: number,
-//       goalsBalance: number,
-//       efficiency: number,
-//     }[] = [];
-//     let arrName: string[] = [];
-//     for (let i = 0; i < arrT.length; i += 1) {
-//       for (let ind = 0; ind < arrT.length; ind += 1) {
-//         if (ind !== i && arrT[i].name === arrT[ind].name) {
-//           const arrA = array;
-//           const arrN = arrName;
-//           const res = this.somarEmArrayHomeAway(arrT[i], arrT[ind]);
-//           if (!arrName.includes(arrT[i].name)) {
-//             arrName = [...arrN, arrT[i].name]; array = [...arrA, res];
-//           }
-//         }
-//       }
-//     }
-//     console.log(array);
-//   }
+  public async criarArrayHomeAway() {
+    const arrHome = [...await this.criarArray(true)];
+    const arrAway = [...await this.criarArray(false)];
+    let array: { totalPoints: number; goalsFavor: number; goalsOwn: number; goalsBalance: number;
+      name: string; totalDraws: number; totalGames: number; totalVictories: number;
+      efficiency: number; totalLosses: number; }[] = [];
+    arrHome.forEach((element) => {
+      const arr = array;
+      arrAway.forEach(async (elemen) => {
+        if (element.name === elemen.name) {
+          array = [...arr, this.somarEmArrayHomeAway(element, elemen)];
+        }
+      });
+    });
+    const result = await this.colocarEmOrder(array, true);
+    return result;
+  }
 }
-
-// const n = new LeaderboardService();
-// n.colocarEmOrderArrayHomeAway();
-
-// const p = async () => {
-//   const a = await n.criarArray(true);
-//   const b = await n.criarArray(false);
-//   const tt = [...a, ...b];
-//   console.log(tt);
-// };
-
-// p();
 
 export default LeaderboardService;

@@ -20,6 +20,11 @@ class UserController {
     }));
     res.status(200).json(arraySemId);
   }
+
+  public async leaderboardHomeAway(_req: Request, res: Response): Promise<void> {
+    const array = await this.leaderboardService.criarArrayHomeAway();
+    res.status(200).json(array);
+  }
 }
 
 // const n = new UserController();

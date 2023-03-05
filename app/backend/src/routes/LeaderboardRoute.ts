@@ -17,6 +17,9 @@ class LeaderboardRoute {
     this.route.get('/away', (req, res) => {
       this.controller.leaderboard(req, res, false);
     });
+    this.route.get('/', (req, res) => {
+      this.controller.leaderboardHomeAway(req, res);
+    });
   }
 }
 
