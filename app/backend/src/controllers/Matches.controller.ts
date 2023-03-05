@@ -46,7 +46,7 @@ class UserController {
     const tokenResult = await this.matchesMiddleware.tokenValid(req, res);
     const matchesValid = await this.matchesMiddleware.matchesValid(req, res);
     const create = req.body;
-    create.inProgress = true;
+    create.inProgress = false;
     const { message } = tokenResult;
 
     if (tokenResult.type !== 200) res.status(401).json({ message });

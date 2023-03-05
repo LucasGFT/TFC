@@ -12,7 +12,10 @@ class LeaderboardRoute {
 
   private rotas(): void {
     this.route.get('/home', (req, res) => {
-      this.controller.testes(req, res);
+      this.controller.leaderboard(req, res, true);
+    });
+    this.route.get('/away', (req, res) => {
+      this.controller.leaderboard(req, res, false);
     });
   }
 }

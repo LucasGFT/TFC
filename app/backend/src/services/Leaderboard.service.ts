@@ -22,11 +22,15 @@ class LeaderboardService {
     efficiency: 0,
   }];
 
-  private resultMatches = Matches.findAll({
-    where: { inProgress: false },
-    order: [['homeTeamId', 'ASC']],
-    attributes: { exclude: ['id'] },
-  });
+  resultMatches = (bool: boolean) => {
+    let ss = 'homeTeamId';
+    if (!bool) ss = 'awayTeamId';
+    return Matches.findAll({
+      where: { inProgress: false },
+      order: [[ss, 'ASC']],
+      attributes: { exclude: ['id'] },
+    });
+  };
 
   private objectResult = { id: 0,
     name: '',
@@ -50,7 +54,7 @@ class LeaderboardService {
     goalsBalance: 0,
     efficiency: 0 };
 
-  public async colocarResultMatches(homeTeamGoals: number, awayTeamGoals: number, obj: {
+  private async colocarResultMatches(homeTeamGoals: number, awayTeamGoals: number, obj: {
     totalVictories: number; totalPoints: number; totalLosses: number; totalDraws: number
     efficiency: number; totalGames: number }) {
     const objResult = obj;
@@ -65,7 +69,7 @@ class LeaderboardService {
     );
   }
 
-  public async colocarValorMatch(homeTeamGoals: number, awayTeamGoals: number, jaContem: boolean) {
+  private async colocarValorMatch(homeTeamGoals: number, awayTeamGoals: number, jaContem: boolean) {
     let obj;
     const arrrayAntigo = this.arrayTimes;
     if (!jaContem) obj = this.objectResult;
@@ -86,38 +90,64 @@ class LeaderboardService {
     }
   }
 
-  public async criarObject(obj: Matches | null) {
-    const array = this.arrayTimes;
-    const objAtual = array[array.length - 1];
-    const id = obj?.homeTeamId;
+  private async criarObject(obj: Matches | null, bool: boolean) {
+    let id;
+    let primeiroParam = 0;
+    let segundoParam = 0;
+    const array = this.arrayTimes; const objAtual = array[array.length - 1];
+    if (bool) id = obj?.homeTeamId; if (!bool) id = obj?.awayTeamId;
     this.objMatches = array[array.length - 1];
     if (obj !== null) {
-      if (objAtual.id === obj.homeTeamId) {
-        await this.colocarValorMatch(obj.homeTeamGoals, obj.awayTeamGoals, true);
+      if (bool === true) { primeiroParam = obj.homeTeamGoals; segundoParam = obj.awayTeamGoals; }
+      if (bool === false) { segundoParam = obj.homeTeamGoals; primeiroParam = obj.awayTeamGoals; }
+      if (objAtual.id === id) {
+        await this.colocarValorMatch(primeiroParam, segundoParam, true);
       }
-      if (id && objAtual.id !== obj.homeTeamId) {
-        const a = this.objectResult;
-        a.id = id;
-        a.name = this.todosTeam[id - 1].teamName;
-        await this.colocarValorMatch(obj.homeTeamGoals, obj.awayTeamGoals, false);
+      if (id && objAtual.id !== id) {
+        const a = this.objectResult; a.id = id; a.name = this.todosTeam[id - 1].teamName;
+        await this.colocarValorMatch(primeiroParam, segundoParam, false);
       }
     }
   }
 
-  public async colocarEmOrder(array: { totalPoints: number; goalsFavor: number;
+  private async colocarEmOrderAway(array: { totalPoints: number; goalsFavor: number;
     goalsOwn: number; goalsBalance: number; name: string; totalDraws: number; totalGames: number
     totalVictories: number; efficiency: number; totalLosses: number }[]) {
+    const z = this.zero;
     const arrayEmOrdem = array.sort((a, b) => {
       if (a.totalPoints < b.totalPoints) return 1; if (a.totalPoints > b.totalPoints) return -1;
       if (a.goalsBalance < b.goalsBalance) return 1; if (a.goalsBalance > b.goalsBalance) return -1;
       if (a.goalsFavor < b.goalsFavor) return 1; if (a.goalsFavor > b.goalsFavor) return -1;
       if (a.goalsOwn < b.goalsOwn) return 1; if (a.goalsOwn > b.goalsOwn) return -1; return 0;
-      console.log(this.zero);
+      console.log(z);
     });
     return arrayEmOrdem;
   }
 
-  public async zerarArray() {
+  private async colocarEmOrderHome(array: { totalPoints: number; goalsFavor: number;
+    goalsOwn: number; goalsBalance: number; name: string; totalDraws: number; totalGames: number
+    totalVictories: number; efficiency: number; totalLosses: number }[]) {
+    const z = this.zero;
+    const arrayEmOrdem = array.sort((a, b) => {
+      if (a.totalPoints < b.totalPoints) return z + 1; if (a.totalPoints > b.totalPoints) return -1;
+      if (a.goalsBalance < b.goalsBalance) return 1; if (a.goalsBalance > b.goalsBalance) return -1;
+      if (a.goalsFavor < b.goalsFavor) return 1; if (a.goalsFavor > b.goalsFavor) return -1;
+      if (a.goalsOwn < b.goalsOwn) return 1; if (a.goalsOwn > b.goalsOwn) return -1; return 0;
+    });
+    return arrayEmOrdem;
+  }
+
+  private async colocarEmOrder(array: { totalPoints: number; goalsFavor: number;
+    goalsOwn: number; goalsBalance: number; name: string; totalDraws: number; totalGames: number
+    totalVictories: number; efficiency: number; totalLosses: number }[], bool: boolean) {
+    let result;
+    if (bool === true) { result = await this.colocarEmOrderHome(array); } else {
+      result = await this.colocarEmOrderAway(array);
+    }
+    return result;
+  }
+
+  private async zerarArray() {
     this.arrayTimes = [
       { id: 1,
         name: '',
@@ -133,11 +163,11 @@ class LeaderboardService {
     ];
   }
 
-  public async criarArray() {
+  public async criarArray(p: boolean) {
     this.todosTeam = await new TeamsService().findAll();
-    await this.zerarArray();
+    const todasMatches = await this.resultMatches(p); await this.zerarArray();
     this.arrayTimes[0].name = this.todosTeam[0].teamName;
-    (await this.resultMatches).forEach(async (e) => {
+    (todasMatches).forEach(async (e) => {
       this.objectResult = { id: 0,
         name: '',
         totalPoints: 0,
@@ -149,9 +179,69 @@ class LeaderboardService {
         goalsOwn: 0,
         goalsBalance: 0,
         efficiency: 0 };
-      await this.criarObject(e);
+      await this.criarObject(e, p);
     }); const result = this.arrayTimes;
-    const resultado = await this.colocarEmOrder(result); return resultado;
+    const resultado = await this.colocarEmOrder(result, p); return resultado;
   }
+
+  // public async somarEmArrayHomeAway(objI: any, obji: any) {
+  //   const a = {
+  //     name: objI.name,
+  //     totalPoints: objI.totalPoints + obji.totalPoints,
+  //     totalGames: objI.totalGames + obji.totalGames,
+  //     totalVictories: objI.totalVictories + obji.totalVictories,
+  //     totalDraws: objI.totalDraws + obji.totalDraws,
+  //     totalLosses: objI.totalLosses + obji.totalLosses,
+  //     goalsFavor: objI.goalsFavor + obji.goalsFavor,
+  //     goalsOwn: objI.goalsOwn + obji.goalsOwn,
+  //     goalsBalance: objI.goalsBalance + obji.goalsBalance,
+  //     efficiency: Number((objI.efficiency + obji.efficiency).toFixed(2)),
+  //   };
+  //   return a;
+  //   console.log(this.zero);
+  // }
+
+  // eslint-disable-next-line max-lines-per-function
+//   public async colocarEmOrderArrayHomeAway() {
+//     const arrT = [...await this.criarArray(true), ...await this.criarArray(false)];
+//     let array: { name: string,
+//       totalPoints: number,
+//       totalGames: number,
+//       totalVictories: number,
+//       totalDraws: number,
+//       totalLosses: number,
+//       goalsFavor: number,
+//       goalsOwn: number,
+//       goalsBalance: number,
+//       efficiency: number,
+//     }[] = [];
+//     let arrName: string[] = [];
+//     for (let i = 0; i < arrT.length; i += 1) {
+//       for (let ind = 0; ind < arrT.length; ind += 1) {
+//         if (ind !== i && arrT[i].name === arrT[ind].name) {
+//           const arrA = array;
+//           const arrN = arrName;
+//           const res = this.somarEmArrayHomeAway(arrT[i], arrT[ind]);
+//           if (!arrName.includes(arrT[i].name)) {
+//             arrName = [...arrN, arrT[i].name]; array = [...arrA, res];
+//           }
+//         }
+//       }
+//     }
+//     console.log(array);
+//   }
 }
+
+// const n = new LeaderboardService();
+// n.colocarEmOrderArrayHomeAway();
+
+// const p = async () => {
+//   const a = await n.criarArray(true);
+//   const b = await n.criarArray(false);
+//   const tt = [...a, ...b];
+//   console.log(tt);
+// };
+
+// p();
+
 export default LeaderboardService;
