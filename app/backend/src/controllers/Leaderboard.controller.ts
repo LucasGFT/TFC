@@ -27,7 +27,4 @@ class UserController {
   }
 }
 
-// const n = new UserController();
-// n.testes();
-
 export default UserController;

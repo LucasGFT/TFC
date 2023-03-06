@@ -10,8 +10,8 @@ class UserController {
     const { inProgress } = req.query;
     let result;
     if (inProgress) {
-      if (inProgress === 'true') result = await this.matchesService.findMatchesInProgress(true);
-      if (inProgress === 'false') result = await this.matchesService.findMatchesInProgress(false);
+      if (inProgress === 'true') result = await this.matchesService.findMatchesInProgress(1);
+      if (inProgress === 'false') result = await this.matchesService.findMatchesInProgress(0);
       res.status(200).json(result);
     }
     if (!inProgress) {

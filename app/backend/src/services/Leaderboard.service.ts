@@ -1,14 +1,14 @@
 import TeamsModel from '../models/TeamsModel';
 import Matches from '../models/MatchesModel';
 import TeamsService from './Teams.service';
+import { LeaderboardInterface,
+  LeaderboardInterfaceId, LeaderboardInterfaceSemGoals } from '../interfaces/LeaderboardInterfaces';
 
 class LeaderboardService {
   private todosTeam: TeamsModel[] = [];
   private zero = 0;
 
-  private arrayTimes: { id: number; name: string; totalPoints: number; totalGames: number;
-    totalVictories: number; totalLosses: number; totalDraws: number; goalsFavor: number;
-    goalsOwn: number; goalsBalance: number; efficiency: number }[] = [{
+  private arrayTimes: LeaderboardInterfaceId[] = [{
     id: 1,
     name: '',
     totalPoints: 0,
@@ -22,7 +22,7 @@ class LeaderboardService {
     efficiency: 0,
   }];
 
-  resultMatches = (bool: boolean) => {
+  resultMatches = (bool: boolean): Promise<Matches[]> => {
     let ss = 'homeTeamId';
     if (!bool) ss = 'awayTeamId';
     return Matches.findAll({
@@ -54,9 +54,11 @@ class LeaderboardService {
     goalsBalance: 0,
     efficiency: 0 };
 
-  private async colocarResultMatches(homeTeamGoals: number, awayTeamGoals: number, obj: {
-    totalVictories: number; totalPoints: number; totalLosses: number; totalDraws: number
-    efficiency: number; totalGames: number }) {
+  private async colocarResultMatches(
+    homeTeamGoals: number,
+    awayTeamGoals: number,
+    obj: LeaderboardInterfaceSemGoals,
+  ): Promise<void> {
     const objResult = obj;
     if (homeTeamGoals > awayTeamGoals) {
       objResult.totalVictories += 1;
@@ -69,7 +71,8 @@ class LeaderboardService {
     );
   }
 
-  private async colocarValorMatch(homeTeamGoals: number, awayTeamGoals: number, jaContem: boolean) {
+  private async colocarValorMatch(homeTeamGoals: number, awayTeamGoals: number, jaContem: boolean)
+    : Promise<void> {
     let obj;
     const arrrayAntigo = this.arrayTimes;
     if (!jaContem) obj = this.objectResult;
@@ -78,7 +81,6 @@ class LeaderboardService {
       this.arrayTimes = [...arrrayAntigo, this.objectResult];
       if (obj)obj.id = this.objMatches.id;
     }
-
     if (obj && obj.id === this.objMatches.id) {
       if (obj.totalGames === 0 && obj.name !== this.todosTeam[0].teamName) obj.id += 1;
       obj.name = this.todosTeam[obj.id - 1].teamName;
@@ -90,7 +92,7 @@ class LeaderboardService {
     }
   }
 
-  private async criarObject(obj: Matches | null, bool: boolean) {
+  private async criarObject(obj: Matches, bool: boolean): Promise<void> {
     let id;
     let primeiroParam = 0;
     let segundoParam = 0;
@@ -110,23 +112,7 @@ class LeaderboardService {
     }
   }
 
-  private async colocarEmOrderAway(array: { totalPoints: number; goalsFavor: number;
-    goalsOwn: number; goalsBalance: number; name: string; totalDraws: number; totalGames: number
-    totalVictories: number; efficiency: number; totalLosses: number }[]) {
-    const z = this.zero;
-    const arrayEmOrdem = array.sort((a, b) => {
-      if (a.totalPoints < b.totalPoints) return 1; if (a.totalPoints > b.totalPoints) return -1;
-      if (a.goalsBalance < b.goalsBalance) return 1; if (a.goalsBalance > b.goalsBalance) return -1;
-      if (a.goalsFavor < b.goalsFavor) return 1; if (a.goalsFavor > b.goalsFavor) return -1;
-      if (a.goalsOwn < b.goalsOwn) return 1; if (a.goalsOwn > b.goalsOwn) return -1; return 0;
-      console.log(z);
-    });
-    return arrayEmOrdem;
-  }
-
-  private async colocarEmOrderHome(array: { totalPoints: number; goalsFavor: number;
-    goalsOwn: number; goalsBalance: number; name: string; totalDraws: number; totalGames: number
-    totalVictories: number; efficiency: number; totalLosses: number }[]) {
+  private async ArrayEmOrder(array: LeaderboardInterface[]): Promise<LeaderboardInterface[]> {
     const z = this.zero;
     const arrayEmOrdem = array.sort((a, b) => {
       if (a.totalPoints < b.totalPoints) return z + 1; if (a.totalPoints > b.totalPoints) return -1;
@@ -137,17 +123,13 @@ class LeaderboardService {
     return arrayEmOrdem;
   }
 
-  private async colocarEmOrder(array: { totalPoints: number; goalsFavor: number;
-    goalsOwn: number; goalsBalance: number; name: string; totalDraws: number; totalGames: number
-    totalVictories: number; efficiency: number; totalLosses: number }[], bool: boolean) {
-    let result;
-    if (bool === true) { result = await this.colocarEmOrderHome(array); } else {
-      result = await this.colocarEmOrderAway(array);
-    }
+  private async colocarEmOrder(array: LeaderboardInterface[])
+    : Promise<LeaderboardInterface[]> {
+    const result = await this.ArrayEmOrder(array);
     return result;
   }
 
-  private async zerarArray() {
+  private async zerarArray(): Promise<void> {
     this.arrayTimes = [
       { id: 1,
         name: '',
@@ -163,7 +145,7 @@ class LeaderboardService {
     ];
   }
 
-  public async criarArray(p: boolean) {
+  public async criarArray(p: boolean): Promise<LeaderboardInterface[]> {
     this.todosTeam = await new TeamsService().findAll();
     const todasMatches = await this.resultMatches(p); await this.zerarArray();
     this.arrayTimes[0].name = this.todosTeam[0].teamName;
@@ -181,16 +163,14 @@ class LeaderboardService {
         efficiency: 0 };
       await this.criarObject(e, p);
     }); const result = this.arrayTimes;
-    const resultado = await this.colocarEmOrder(result, p); return resultado;
+    const resultado = await this.colocarEmOrder(result); return resultado;
   }
 
-  public somarEmArrayHomeAway(objI: { totalPoints: number; goalsFavor: number; goalsOwn: number;
-    goalsBalance: number; name: string; totalDraws: number; totalGames: number;
-    totalVictories: number; efficiency: number; totalLosses: number; }, obji: {
-    totalPoints: number; goalsFavor: number; goalsOwn: number; goalsBalance: number; name: string;
-    totalDraws: number; totalGames: number; totalVictories: number; efficiency: number;
-    totalLosses: number; }) {
-    const a = { name: objI.name,
+  public somarEmArrayHomeAway(
+    objI: LeaderboardInterface,
+    obji: LeaderboardInterface,
+  ): LeaderboardInterface {
+    return { name: objI.name,
       totalPoints: objI.totalPoints + obji.totalPoints,
       totalGames: objI.totalGames + obji.totalGames,
       totalVictories: objI.totalVictories + obji.totalVictories,
@@ -200,17 +180,14 @@ class LeaderboardService {
       goalsOwn: objI.goalsOwn + obji.goalsOwn,
       goalsBalance: objI.goalsBalance + obji.goalsBalance,
       efficiency: Number((((objI.totalPoints + obji.totalPoints) / (
-        (objI.totalGames + obji.totalGames) * 3)) * 100).toFixed(2)),
-    }; return a;
-    console.log(this.zero);
+        (objI.totalGames + obji.totalGames) * 3)) * 100).toFixed(this.zero + 2)),
+    };
   }
 
-  public async criarArrayHomeAway() {
+  public async criarArrayHomeAway(): Promise<LeaderboardInterface[]> {
     const arrHome = [...await this.criarArray(true)];
     const arrAway = [...await this.criarArray(false)];
-    let array: { totalPoints: number; goalsFavor: number; goalsOwn: number; goalsBalance: number;
-      name: string; totalDraws: number; totalGames: number; totalVictories: number;
-      efficiency: number; totalLosses: number; }[] = [];
+    let array: LeaderboardInterface[] = [];
     arrHome.forEach((element) => {
       const arr = array;
       arrAway.forEach(async (elemen) => {
@@ -219,7 +196,7 @@ class LeaderboardService {
         }
       });
     });
-    const result = await this.colocarEmOrder(array, true);
+    const result = await this.colocarEmOrder(array);
     return result;
   }
 }

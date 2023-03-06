@@ -60,13 +60,4 @@ class UserMiddleware {
   }
 }
 
-// const teste = async () => {
-//   const b = new UserService();
-//   const c = await b.findUser('admin@admin.com', 'secret_admin');
-//   const a = validaToken(c.message);
-//   if (typeof a === 'object' && a !== null) console.log(a.data);
-// };
-
-// teste();
-
 export default UserMiddleware;

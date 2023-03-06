@@ -51,20 +51,3 @@ describe('pesquisar team por id', () => {
     expect(chaiHttpResponse.text).to.be.eq(cruzeiro);
   });
 });
-
-// describe('.get team pelo id', () => {
-// let chaiHttpResponse: Response;
-
-// before(async () => {
-//   sinon.stub(TeamModel, 'findAll').resolves(teamsMock as TeamModel[]);
-// });
-
-// after(() => {
-//   (TeamModel.findAll as sinon.SinonStub).restore();
-// });
-
-// it('todos teams', async () => {
-//   chaiHttpResponse = await chai.request(app).get('/teams');
-//   expect(chaiHttpResponse.status).to.be.eq(200);
-// });
-// });

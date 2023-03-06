@@ -1,11 +1,12 @@
 import bcrypt = require('bcryptjs');
 import criarToken from '../utils/token';
 import Users from '../models/UsersModel';
+import ResultObject from '../interfaces/ResultInterfaces';
 
 class UserService {
   private user = Users;
   private _invalide = 'Invalid email or password';
-  public async findUser(email: string, password: string) {
+  public async findUser(email: string, password: string): Promise<ResultObject> {
     const user = await this.user.findOne({ where: { email } });
     if (user !== null) {
       const verifica = bcrypt.compareSync(password, user.password);
@@ -15,15 +16,13 @@ class UserService {
     return { type: 401, message: this._invalide };
   }
 
-  public async findRoleByEmail(email: string) {
+  public async findRoleByEmail(email: string): Promise<ResultObject> {
     const user = await this.user.findOne({ where: { email } });
     if (user !== null) {
       return { type: 200, message: user.role };
     }
     return { type: 401, message: this._invalide };
   }
-
-  // public async getUser()
 }
 
 export default UserService;
